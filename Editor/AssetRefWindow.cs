@@ -25,6 +25,9 @@ public class AssetRefWindow : EditorWindow
 
     private AssetRefUtil.UnityFileData m_kCurSelectUnityFileData;
 
+    private float m_fNumberWidth = 50;
+
+
     private static bool AreArraysEqual(string[] a, string[] b)
     {
         if (a == null || b == null || a.Length != b.Length) return false;
@@ -116,7 +119,7 @@ public class AssetRefWindow : EditorWindow
             {
                 EditorGUILayout.LabelField(dps.m_kPath);
             }
-        }
+        }                           
     }
 
     private void OnLeftPart()
@@ -137,7 +140,7 @@ public class AssetRefWindow : EditorWindow
         {
             using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button($"{count1}", GUILayout.Width(30)))
+                if (GUILayout.Button($"{count1}", GUILayout.Width(m_fNumberWidth)))
                 {
                     m_kCurSelectUnityFileData = selectData;
                     GUIUtility.systemCopyBuffer = selectData.m_kPath;
@@ -162,7 +165,7 @@ public class AssetRefWindow : EditorWindow
                 {
                     using (new GUILayout.HorizontalScope())
                     {
-                        if( GUILayout.Button($"{count}",GUILayout.Width(30)))
+                        if( GUILayout.Button($"{count}",GUILayout.Width(m_fNumberWidth)))
                         {
                             m_kCurSelectUnityFileData = refData;
                             GUIUtility.systemCopyBuffer = refData.m_kPath;
@@ -177,7 +180,7 @@ public class AssetRefWindow : EditorWindow
             {
                 using (new GUILayout.HorizontalScope())
                 {
-                    if (GUILayout.Button($"{count}", GUILayout.Width(30)))
+                    if (GUILayout.Button($"{count}", GUILayout.Width(m_fNumberWidth)))
                     {
                         m_kCurSelectUnityFileData = refData;
                         GUIUtility.systemCopyBuffer = refData.m_kPath;
