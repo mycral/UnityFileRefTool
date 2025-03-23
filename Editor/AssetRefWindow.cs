@@ -32,6 +32,7 @@ namespace AssetRefTool
 
         private float m_fNumberWidth = 50;
 
+        private int m_iTotalMemorySize;
 
         private static bool AreArraysEqual(string[] a, string[] b)
         {
@@ -172,8 +173,12 @@ namespace AssetRefTool
             {
                 EditorGUILayout.LabelField("Filter:",GUILayout.Width(50));
                 m_kCurSearchText = m_kSearchField.OnGUI(m_kCurSearchText,GUILayout.ExpandWidth(true));
-            }
 
+                if(GUILayout.Button(AssetRefUtil.ConvertToMemorySize(m_iTotalMemorySize)))
+                {
+                    m_iTotalMemorySize = AssetRefUtil.CalcTotalSize();
+                }
+            }
 
             m_kScrollPos = GUILayout.BeginScrollView(m_kScrollPos, EditorStyles.helpBox);
             GUILayout.BeginVertical();
@@ -191,7 +196,10 @@ namespace AssetRefTool
                                 m_kCurSelectUnityFileData = refData;
                                 GUIUtility.systemCopyBuffer = refData.m_kPath;
                             }
-
+                            if (refData.m_iMemorySize != 0)
+                            {
+                                GUILayout.Box(AssetRefUtil.ConvertToMemorySize(refData.m_iMemorySize), GUILayout.Width(m_fNumberWidth * 2));
+                            }
                             EditorGUILayout.LabelField(refData.m_kPath);
                             count++;
                         }
@@ -205,6 +213,10 @@ namespace AssetRefTool
                         {
                             m_kCurSelectUnityFileData = refData;
                             GUIUtility.systemCopyBuffer = refData.m_kPath;
+                        }
+                        if(refData.m_iMemorySize != 0)
+                        {
+                            GUILayout.Box(AssetRefUtil.ConvertToMemorySize(refData.m_iMemorySize), GUILayout.Width(m_fNumberWidth * 2));
                         }
                         EditorGUILayout.LabelField(refData.m_kPath);
                         count++;

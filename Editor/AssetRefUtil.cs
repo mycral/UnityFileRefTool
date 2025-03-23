@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using System;
 
 
 namespace AssetRefTool
@@ -15,7 +16,7 @@ namespace AssetRefTool
             public string m_kPath;
             public HashSet<UnityFileData> m_kDepends = new HashSet<UnityFileData>();
             public HashSet<UnityFileData> m_kRefeds = new HashSet<UnityFileData>();
-
+            public int m_iMemorySize;
             public void Clear()
             {
                 m_kDepends.Clear();
@@ -89,6 +90,7 @@ namespace AssetRefTool
                     m_kAllUnityFileDataDic[refFilePath].Clear();
                 }
             }
+
             Debug.Log($"S2 {(System.DateTime.Now - startTime).TotalMilliseconds}");
             int progressCount = 0;
             startTime = System.DateTime.Now;
@@ -100,6 +102,7 @@ namespace AssetRefTool
                 {
                     if(EditorUtility.DisplayCancelableProgressBar("¼ìË÷×ÜÒÀÀµ",$"{progressCount}/{m_kAllUnityFileDataDic.Count}", (float)((double)progressCount/ (double)m_kAllUnityFileDataDic.Count)))
                     {
+                        EditorUtility.ClearProgressBar();
                         return;
                     }
                 }
@@ -118,6 +121,44 @@ namespace AssetRefTool
             Debug.Log($"S3 {(System.DateTime.Now - startTime).TotalMilliseconds}");
             EditorUtility.ClearProgressBar();
         }
+
+        public static int CalcTotalSize()
+        {
+            int totalSize = 0;
+
+            foreach(var data in m_kAllUnityFileDataDic.Values)
+            {
+                string path = data.m_kPath;
+                var tex = AssetDatabase.LoadAssetAtPath<Texture>(path);
+                if(tex != null)
+                {
+                    data.m_iMemorySize = (int)UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(tex);
+                }
+                var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+                if (mesh != null)
+                {
+                    data.m_iMemorySize = (int)UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(mesh);
+                }
+
+                totalSize += data.m_iMemorySize;
+            }
+
+            return totalSize;
+        }
+
+        public static string ConvertToMemorySize(long bytes)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+            int order = 0;
+            double len = bytes;
+            while (len >= 1024 && order < sizes.Length - 1)
+            {
+                order++;
+                len = len / 1024;
+            }
+            return String.Format("{0:0.##} {1}", len, sizes[order]);
+        }
+
     }
 }
 
