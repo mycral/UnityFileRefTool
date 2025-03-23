@@ -145,7 +145,8 @@ namespace AssetRefTool
                 EditorGUILayout.LabelField(selectPath);
             }
 
-            m_kScrollPos1 = GUILayout.BeginScrollView(m_kScrollPos1, EditorStyles.helpBox, GUILayout.ExpandHeight(false));
+            m_kScrollPos1 = GUILayout.BeginScrollView(m_kScrollPos1, EditorStyles.helpBox, GUILayout.MinHeight(200));
+            GUILayout.BeginVertical();
             int count1 = 0;
             foreach (var selectData in AssetRefUtil.m_kSelectedUnityFileData)
             {
@@ -162,6 +163,7 @@ namespace AssetRefTool
                 }
 
             }
+            GUILayout.EndVertical();
             GUILayout.EndScrollView();
             GUILayout.Space(10);
 
@@ -174,6 +176,7 @@ namespace AssetRefTool
 
 
             m_kScrollPos = GUILayout.BeginScrollView(m_kScrollPos, EditorStyles.helpBox);
+            GUILayout.BeginVertical();
             int count = 0;
             foreach (var refData in AssetRefUtil.m_kRetDependsUnityFileData)
             {
@@ -208,7 +211,7 @@ namespace AssetRefTool
                     }
                 }
             }
-
+            GUILayout.EndVertical();
             GUILayout.EndScrollView();
 
             GUILayout.EndVertical();

@@ -49,18 +49,18 @@ namespace AssetRefTool
                     allContainsFilePaths.Add(path);
                 }
             }
-
-            string[] allFolderFileGuids = AssetDatabase.FindAssets("", srcFolders.ToArray());
-            HashSet<string> allContainsFileGuids = new HashSet<string>(1024);
-            foreach (var folderGuid in allFolderFileGuids)
+            if(srcFolders.Count > 0)
             {
-                allContainsFileGuids.Add(folderGuid);
-            }
-
-
-            foreach (var guid in allContainsFileGuids)
-            {
-                allContainsFilePaths.Add(AssetDatabase.GUIDToAssetPath(guid));
+                string[] allFolderFileGuids = AssetDatabase.FindAssets("", srcFolders.ToArray());
+                HashSet<string> allContainsFileGuids = new HashSet<string>(1024);
+                foreach (var folderGuid in allFolderFileGuids)
+                {
+                    allContainsFileGuids.Add(folderGuid);
+                }
+                foreach (var guid in allContainsFileGuids)
+                {
+                    allContainsFilePaths.Add(AssetDatabase.GUIDToAssetPath(guid));
+                }
             }
 
             Debug.Log($"S1 {(System.DateTime.Now - startTime).TotalMilliseconds}");
