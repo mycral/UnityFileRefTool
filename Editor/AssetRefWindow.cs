@@ -20,6 +20,8 @@ public class AssetRefWindow : EditorWindow
 
     private Vector2 m_kScrollPos;
     private Vector2 m_kScrollPos1;
+    private Vector2 m_kScrollPos2;
+    private Vector2 m_kScrollPos3;
     private SearchField m_kSearchField;
     private string m_kCurSearchText;
 
@@ -108,17 +110,23 @@ public class AssetRefWindow : EditorWindow
             EditorGUILayout.Space();
             EditorGUILayout.LabelField($"Reference From:");
 
-            foreach(var refSrc in m_kCurSelectUnityFileData.m_kRefeds)
+            m_kScrollPos2 = GUILayout.BeginScrollView(m_kScrollPos2,EditorStyles.helpBox);
+
+            foreach (var refSrc in m_kCurSelectUnityFileData.m_kRefeds)
             {
                 EditorGUILayout.LabelField(refSrc.m_kPath);
             }
+
+            GUILayout.EndScrollView();
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField($"Depends:");
-
+            m_kScrollPos3 = GUILayout.BeginScrollView(m_kScrollPos3, EditorStyles.helpBox);
             foreach (var dps in m_kCurSelectUnityFileData.m_kDepends)
             {
                 EditorGUILayout.LabelField(dps.m_kPath);
             }
+            GUILayout.EndScrollView();
         }                           
     }
 
@@ -134,7 +142,7 @@ public class AssetRefWindow : EditorWindow
             EditorGUILayout.LabelField(selectPath);
         }
 
-        m_kScrollPos1 = GUILayout.BeginScrollView(m_kScrollPos1,GUILayout.ExpandHeight(false));
+        m_kScrollPos1 = GUILayout.BeginScrollView(m_kScrollPos1,EditorStyles.helpBox,GUILayout.ExpandHeight(false));
         int count1 = 0;
         foreach (var selectData in AssetRefUtil.m_kSelectedUnityFileData)
         {
@@ -152,10 +160,10 @@ public class AssetRefWindow : EditorWindow
 
         }
         GUILayout.EndScrollView();
-
+        GUILayout.Space(10);
         m_kCurSearchText = m_kSearchField.OnGUI(m_kCurSearchText);
 
-        m_kScrollPos = GUILayout.BeginScrollView(m_kScrollPos);
+        m_kScrollPos = GUILayout.BeginScrollView(m_kScrollPos, EditorStyles.helpBox);
         int count = 0;
         foreach(var refData in AssetRefUtil.m_kRetDependsUnityFileData)
         {
