@@ -164,7 +164,14 @@ namespace AssetRefTool
             }
             GUILayout.EndScrollView();
             GUILayout.Space(10);
-            m_kCurSearchText = m_kSearchField.OnGUI(m_kCurSearchText);
+
+
+            using(new  EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("Filter:",GUILayout.Width(50));
+                m_kCurSearchText = m_kSearchField.OnGUI(m_kCurSearchText,GUILayout.ExpandWidth(true));
+            }
+
 
             m_kScrollPos = GUILayout.BeginScrollView(m_kScrollPos, EditorStyles.helpBox);
             int count = 0;

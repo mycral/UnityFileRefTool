@@ -33,6 +33,9 @@ namespace AssetRefTool
             m_kRetDependsUnityFileData.Clear();
             m_kSelectedUnityFileData.Clear();
 
+            var startTime = System.DateTime.Now;
+
+
             HashSet<string> allContainsFilePaths = new HashSet<string>(1024);
             List<string> srcFolders = new List<string>();
             foreach (string path in folderPaths)
@@ -60,6 +63,10 @@ namespace AssetRefTool
                 allContainsFilePaths.Add(AssetDatabase.GUIDToAssetPath(guid));
             }
 
+            Debug.Log($"S1 {(System.DateTime.Now - startTime).TotalMilliseconds}");
+            startTime = System.DateTime.Now;
+
+
             //下面这个foreach 会包含所有相关的对象
             foreach (var refFilePath in AssetDatabase.GetDependencies(allContainsFilePaths.ToArray(), true))
             {
@@ -82,9 +89,20 @@ namespace AssetRefTool
                     m_kAllUnityFileDataDic[refFilePath].Clear();
                 }
             }
+            Debug.Log($"S2 {(System.DateTime.Now - startTime).TotalMilliseconds}");
+            int progressCount = 0;
+            startTime = System.DateTime.Now;
             //接下来只需要梳理关系即可
             foreach (var fileKv in m_kAllUnityFileDataDic)
             {
+                progressCount++;
+                if(progressCount % 100 == 0)
+                {
+                    if(EditorUtility.DisplayCancelableProgressBar("检索总依赖",$"{progressCount}/{m_kAllUnityFileDataDic.Count}", (float)((double)progressCount/ (double)m_kAllUnityFileDataDic.Count)))
+                    {
+                        return;
+                    }
+                }
                 var refFiles = AssetDatabase.GetDependencies(fileKv.Key, true);
                 UnityFileData curFileData = fileKv.Value;
                 foreach (var refFile in refFiles)
@@ -97,7 +115,8 @@ namespace AssetRefTool
                     refFileData.m_kRefeds.Add(curFileData);
                 }
             }
-
+            Debug.Log($"S3 {(System.DateTime.Now - startTime).TotalMilliseconds}");
+            EditorUtility.ClearProgressBar();
         }
     }
 }
