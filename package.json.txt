@@ -1,0 +1,13 @@
+{
+  "name": "com.gll.assetreftool",
+  "version": "1.0.0",
+  "displayName": "AssetRefTool",
+  "description": "Look At Selected Asset Ref Files",
+  "unity": "2022.3",
+  "author": {
+    "name": "gll",
+    "email": "guoliulong@gmail.com",
+    "url": "https://github.com/mycral/UnityFileRefTool"
+  },
+  "dependencies": {}
+}
