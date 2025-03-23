@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
-public class RefData
+public class AssetRefUtil
 {
     public class UnityFileData
     {
@@ -23,38 +23,33 @@ public class RefData
     public static Dictionary<string,UnityFileData> m_kAllUnityFileDataDic = new Dictionary<string,UnityFileData>();
     public static HashSet<UnityFileData> m_kRetDependsUnityFileData = new HashSet<UnityFileData>();
 
-
-    //[MenuItem("Assets/FindFolderRefs")]
-    //public static void FindFolderRefs()
-    //{
-    //    List<string> selectFolderPaths = new List<string>();
-    //    var curFolderGuids = Selection.assetGUIDs;
-    //    foreach(var folder in curFolderGuids)
-    //    {
-    //        string path = AssetDatabase.GUIDToAssetPath(folder);
-    //        if(AssetDatabase.IsValidFolder(path))
-    //        {
-    //            selectFolderPaths.Add(path);
-    //        }
-    //    }
-
-    //    FindFolderRefs(selectFolderPaths.ToArray());
-
-    //}
     public static void FindFolderRefs(string[] folderPaths)
     {
         m_kAllUnityFileDataDic.Clear();
         m_kRetDependsUnityFileData.Clear();
         m_kSelectedUnityFileData.Clear();
 
-        string[] allFolderFileGuids =  AssetDatabase.FindAssets("", folderPaths);
+        HashSet<string> allContainsFilePaths = new HashSet<string>(1024);
+        List<string> srcFolders = new List<string>();
+        foreach (string path in folderPaths)
+        {
+            if(AssetDatabase.IsValidFolder(path))
+            {
+                srcFolders.Add(path);
+            }
+            else
+            {
+                allContainsFilePaths.Add(path);
+            }
+        }
+
+        string[] allFolderFileGuids =  AssetDatabase.FindAssets("", srcFolders.ToArray());
         HashSet<string> allContainsFileGuids = new HashSet<string>(1024);
         foreach(var folderGuid in allFolderFileGuids)
         {
             allContainsFileGuids.Add(folderGuid);
         }
 
-        HashSet<string> allContainsFilePaths = new HashSet<string>(1024);
 
         foreach (var guid in allContainsFileGuids)
         {
@@ -87,9 +82,12 @@ public class RefData
         foreach (var fileKv in m_kAllUnityFileDataDic)
         {
             var refFiles = AssetDatabase.GetDependencies(fileKv.Key, true);
-            UnityFileData curFileData = m_kAllUnityFileDataDic[fileKv.Key];
+            UnityFileData curFileData = fileKv.Value;
             foreach (var refFile in refFiles)
             {
+                if (refFile == curFileData.m_kPath)
+                    continue;
+
                 var refFileData =  m_kAllUnityFileDataDic[refFile];
                 curFileData.m_kDepends.Add(refFileData);
                 refFileData.m_kRefeds.Add(curFileData);

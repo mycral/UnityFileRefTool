@@ -6,7 +6,7 @@ using UnityEditor.IMGUI.Controls;
 
 public class AssetRefWindow : EditorWindow
 {
-    [MenuItem("Assets/FindRefs")]
+    [MenuItem("Assets/FindFolderRefs")]
     public static void CreateWindow()
     {
         GetWindow<AssetRefWindow>().Show();
@@ -19,10 +19,11 @@ public class AssetRefWindow : EditorWindow
     private List<string> m_kRefFilePaths = new List<string>();
 
     private Vector2 m_kScrollPos;
+    private Vector2 m_kScrollPos1;
     private SearchField m_kSearchField;
     private string m_kCurSearchText;
 
-    private RefData.UnityFileData m_kCurSelectUnityFileData;
+    private AssetRefUtil.UnityFileData m_kCurSelectUnityFileData;
 
     private static bool AreArraysEqual(string[] a, string[] b)
     {
@@ -63,13 +64,10 @@ public class AssetRefWindow : EditorWindow
         foreach (var folder in curFolderGuids)
         {
             string path = AssetDatabase.GUIDToAssetPath(folder);
-            if (AssetDatabase.IsValidFolder(path))
-            {
-                m_kSelectFolderPaths.Add(path);
-            }
+            m_kSelectFolderPaths.Add(path);
         }
 
-        RefData.FindFolderRefs(m_kSelectFolderPaths.ToArray());
+        AssetRefUtil.FindFolderRefs(m_kSelectFolderPaths.ToArray());
 
         Repaint();
     }
@@ -105,11 +103,18 @@ public class AssetRefWindow : EditorWindow
 
             EditorGUILayout.LabelField($"Selected: {m_kCurSelectUnityFileData.m_kPath}");
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField($"Red From:");
+            EditorGUILayout.LabelField($"Reference From:");
 
             foreach(var refSrc in m_kCurSelectUnityFileData.m_kRefeds)
             {
                 EditorGUILayout.LabelField(refSrc.m_kPath);
+            }
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField($"Depends:");
+
+            foreach (var dps in m_kCurSelectUnityFileData.m_kDepends)
+            {
+                EditorGUILayout.LabelField(dps.m_kPath);
             }
         }
     }
@@ -126,11 +131,30 @@ public class AssetRefWindow : EditorWindow
             EditorGUILayout.LabelField(selectPath);
         }
 
+        m_kScrollPos1 = GUILayout.BeginScrollView(m_kScrollPos1,GUILayout.ExpandHeight(false));
+        int count1 = 0;
+        foreach (var selectData in AssetRefUtil.m_kSelectedUnityFileData)
+        {
+            using (new GUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button($"{count1}", GUILayout.Width(30)))
+                {
+                    m_kCurSelectUnityFileData = selectData;
+                    GUIUtility.systemCopyBuffer = selectData.m_kPath;
+                }
+
+                EditorGUILayout.LabelField(selectData.m_kPath);
+                count1++;
+            }
+
+        }
+        GUILayout.EndScrollView();
+
         m_kCurSearchText = m_kSearchField.OnGUI(m_kCurSearchText);
 
         m_kScrollPos = GUILayout.BeginScrollView(m_kScrollPos);
         int count = 0;
-        foreach(var refData in RefData.m_kRetDependsUnityFileData)
+        foreach(var refData in AssetRefUtil.m_kRetDependsUnityFileData)
         {
             if (m_kCurSearchText != null && m_kCurSearchText.Length > 0)
             {
